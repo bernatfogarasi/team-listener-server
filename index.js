@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 
 const authRoute = require("./routes/auth");
 
+const searchRoute = require("./routes/search");
+
 dotenv.config();
 
 mongoose.connect(
@@ -16,5 +18,7 @@ mongoose.connect(
 app.use(express.json());
 
 app.use("/user", authRoute);
+
+app.use("/search", searchRoute);
 
 app.listen(process.env.PORT || 3000, () => console.log("Server is running..."));
