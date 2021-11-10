@@ -1,0 +1,31 @@
+{
+  "name": "team-listener-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bernatfogarasi/team-listener-server.git"
+  },
+  "author": "Bernat Fogarasi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bernatfogarasi/team-listener-server/issues"
+  },
+  "homepage": "https://github.com/bernatfogarasi/team-listener-server#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.12"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}
