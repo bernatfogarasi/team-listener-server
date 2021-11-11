@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 
 router.post("/youtube", async (request, response) => {
   const { error } = searchValidation(request.body);
+  // if (error) return response.status(400).send(error.details[0].message);
   if (error) return response.status(400).send(error.details[0].message);
 
   const getJsonFromHtml = (html) => {
@@ -23,8 +24,10 @@ router.post("/youtube", async (request, response) => {
   };
 
   const formatVideoInfo = (video) => {
-    const data = video?.videoRenderer;
+    if (!("videoRenderer" in video)) return;
+    const data = video.videoRenderer;
     let result = {
+      site: "youtube",
       id: data.videoId,
       title: data.title.runs[0].text,
       thumbnail: data.thumbnail.thumbnails.slice(-1)[0].url,
@@ -49,7 +52,7 @@ router.post("/youtube", async (request, response) => {
     const html = await fetchResponse.text();
     const json = getJsonFromHtml(html);
     const videos = getVideosFromJson(json);
-    const results = videos.map(formatVideoInfo);
+    const results = videos.map(formatVideoInfo).filter((item) => item);
     response.send(results);
   } catch (error) {
     return response.status(400).send(error);
