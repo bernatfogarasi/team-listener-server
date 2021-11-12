@@ -18,11 +18,15 @@ mongoose.connect(
 app.use(express.json());
 
 app.use((request, response, next) => {
-  response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  response.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  const corsWhiteList = ["http://teamlistener.com", "http://localhost:3000"];
+  const requestOrigin = request.header("origin");
+  if (corsWhiteList.indexOf(requestOrigin) !== -1) {
+    response.setHeader("Access-Control-Allow-Origin", requestOrigin);
+    response.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+  }
   next();
 });
 
