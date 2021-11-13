@@ -2,13 +2,13 @@ const Joi = require("joi");
 
 const registerValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().min(6).required(),
+    name: Joi.string().min(4).required(),
     email: Joi.string()
       .min(6)
       .regex(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/)
       .email()
       .required(),
-    password: Joi.string().min(6).required(),
+    password: Joi.string().min(10).required(),
   });
   return schema.validate(data);
 };
@@ -20,7 +20,7 @@ const loginValidation = (data) => {
       .regex(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/)
       .email()
       .required(),
-    password: Joi.string().min(6).required(),
+    password: Joi.string().min(10).required(),
   });
   return schema.validate(data);
 };
