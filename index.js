@@ -19,6 +19,7 @@ app.use(express.json());
 
 app.use((request, response, next) => {
   const corsWhiteList = ["http://teamlistener.com", "http://localhost:3000"];
+  // console.log(request.header("origin"));
   const requestOrigin = request.header("origin");
   if (corsWhiteList.indexOf(requestOrigin) !== -1) {
     response.setHeader("Access-Control-Allow-Origin", requestOrigin);

@@ -5,8 +5,12 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: true, min: 6, max: 20 },
     email: { type: String, required: true, min: 6, max: 256 },
     emailConfirmed: { type: Boolean, default: false },
+    emailConfirmationToken: {
+      type: String,
+      required: true,
+    },
     password: { type: String, required: true, min: 10, max: 256 },
-    date: { type: Date, default: Date.now },
+    createdAtTimestamp: { type: Number, default: Date.now },
   },
   { timestamps: true }
 );
