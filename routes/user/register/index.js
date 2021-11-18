@@ -1,11 +1,11 @@
-const router = require("express").Router();
-const User = require("../models/User");
-const { registerValidation, loginValidation } = require("../validation");
+const path = require("path");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const router = require("express").Router();
+const User = require(path.resolve("models/User"));
+const { registerValidation } = require(path.resolve("validation"));
 
 const emailTransport = nodemailer.createTransport({
   service: "gmail",
@@ -15,7 +15,7 @@ const emailTransport = nodemailer.createTransport({
   },
 });
 
-router.post("/register", async (request, response) => {
+router.post("/", async (request, response) => {
   console.debug(`Registration [attempt] ${request.body.email}`);
   const { error } = registerValidation(request.body);
   if (error)
@@ -269,72 +269,6 @@ router.post("/register", async (request, response) => {
   );
   response.send({ message: "success" });
   console.debug(`Registration [success] ${request.body.email}`);
-});
-
-router.get("/confirm", async (request, response) => {
-  console.debug(`Confirmation [attempt]`);
-  // const token = request.header("token");
-  const token = await request.query.token;
-
-  if (!token)
-    return response
-      .status(401)
-      .send({ message: "Verification token not specified." });
-
-  const query = { emailConfirmationToken: token };
-  const update = { emailConfirmed: true };
-  User.findOneAndUpdate(query, update, {}, (error, document) => {
-    if (error)
-      return response
-        .status(500)
-        .send({ message: "Cannot search for email token.", error });
-    if (!document)
-      return (
-        response
-          .status(404)
-          // .send("Verification token not found. Please register.")
-          .redirect(
-            `http://teamlistener.com/signup/confirmation/token-not-found`
-          )
-      );
-
-    if (document.emailConfirmed)
-      return (
-        response
-          .status(400)
-          // .send("The account is already verified.")
-          .redirect(
-            `http://teamlistener.com/signup/confirmation/email-already-verified`
-          )
-      );
-
-    response
-      // .send({ message: "success" })
-      .redirect(`http://teamlistener.com/signup/confirmation/success`);
-    console.debug(`Confirmation [success]`);
-  });
-});
-
-router.post("/login", async (request, response) => {
-  const { error } = loginValidation(request.body);
-  if (error) return response.status(400).send(error.details[0].message);
-
-  const user = await User.findOne({ email: request.body.email });
-  if (!user)
-    return response
-      .status(400)
-      .send({ message: "Email does not exist, please register." });
-  const validPassword = await bcrypt.compare(
-    request.body.password,
-    user.password
-  );
-  if (!validPassword)
-    return response.status(400).send({ message: "Invalid password" });
-
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  response.header("auth-token", token).send({ message: "", token });
-
-  // response.send("Logged in.");
 });
 
 module.exports = router;

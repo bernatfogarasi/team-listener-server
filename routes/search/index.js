@@ -1,5 +1,6 @@
+const path = require("path");
 const router = require("express").Router();
-const { searchValidation } = require("../validation");
+const { searchValidation } = require(path.resolve("validation"));
 const fetch = require("node-fetch");
 
 router.post("/youtube", async (request, response) => {
