@@ -293,7 +293,9 @@ router.get("/confirm", async (request, response) => {
         response
           .status(404)
           // .send("Verification token not found. Please register.")
-          .redirect("http://localhost:3000/signup/token-not-found")
+          .redirect(
+            `http://teamlistener.com/signup/confirmation/token-not-found`
+          )
       );
 
     if (document.emailConfirmed)
@@ -301,12 +303,14 @@ router.get("/confirm", async (request, response) => {
         response
           .status(400)
           // .send("The account is already verified.")
-          .redirect("http://localhost:3000/signup/email-already-verified")
+          .redirect(
+            `http://teamlistener.com/signup/confirmation/email-already-verified`
+          )
       );
 
     response
       // .send({ message: "success" })
-      .redirect("http://localhost:3000/signup/success");
+      .redirect(`http://teamlistener.com/signup/confirmation/success`);
     console.debug(`Confirmation [success]`);
   });
 });
