@@ -2,11 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
-mongoose.connect(
-  process.env.DATABASE_CREDENTIALS,
-  { useNewUrlParser: true },
-  (error) => console.log(error ? error : "Connected to database.")
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }, (error) =>
+  console.log(error ? error : "Connected to database.")
 );
 
 app.use(express.json());
@@ -23,6 +23,16 @@ app.use((request, response, next) => {
   }
   next();
 });
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {},
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.DATABASE_URL }),
+  })
+);
 
 app.use("/", require("./routes"));
 

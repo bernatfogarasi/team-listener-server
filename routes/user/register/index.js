@@ -1,8 +1,8 @@
+require("dotenv").config();
 const path = require("path");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-require("dotenv").config();
 const router = require("express").Router();
 const User = require(path.resolve("models/User"));
 const { registerValidation } = require(path.resolve("validation"));
