@@ -4,6 +4,7 @@ const { searchValidation } = require(path.resolve("validation"));
 const fetch = require("node-fetch");
 
 router.post("/youtube", async (request, response) => {
+  console.debug("Youtube search");
   const { error } = searchValidation(request.body);
   // if (error) return response.status(400).send(error.details[0].message);
   if (error) return response.status(400).send(error.details[0].message);

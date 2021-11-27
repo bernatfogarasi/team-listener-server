@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
@@ -20,20 +21,38 @@ app.use((request, response, next) => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
+    response.setHeader("Access-Control-Allow-Credentials", true);
   }
+  next();
+});
+
+app.use(cookieParser());
+
+app.use((request, response, next) => {
+  console.debug(`New request: ${request.originalUrl}`);
+  console.debug(`Cookies: ${JSON.stringify(request.cookies)}`);
   next();
 });
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    cookie: {},
-    resave: false,
+    cookie: {
+      maxAge: 1000 * 60 * 10,
+    },
+    resave: true,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.DATABASE_URL }),
+    store: MongoStore.create({
+      mongoUrl: process.env.DATABASE_URL,
+      // crypto: {
+      //   secret: process.env.SESSION_SECRET,
+      // },
+    }),
   })
 );
 
 app.use("/", require("./routes"));
 
-app.listen(process.env.PORT || 4000, () => console.log("Server is running..."));
+app.listen(process.env.PORT || 4000, () =>
+  console.log(`Server started at ${Date()}.`)
+);

@@ -26,9 +26,12 @@ router.post("/", async (request, response) => {
   if (!validPassword)
     return response.status(400).send({ message: "Invalid password" });
 
-  request.session.isAuthorized = true;
+  request.session.isAuth = true;
   request.session.userId = user._id;
-  response.send({ message: "success" });
+  response.send({
+    message: "success",
+    data: { name: user.name, email: user.email },
+  });
   console.debug(`Login [success] ${request.body.email}`);
   console.log(request.session.id);
 });
