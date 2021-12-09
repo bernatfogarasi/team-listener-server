@@ -17,10 +17,12 @@ app.use((request, response, next) => {
   const requestOrigin = request.header("origin");
   if (corsWhiteList.indexOf(requestOrigin) !== -1) {
     response.setHeader("Access-Control-Allow-Origin", requestOrigin);
-    response.setHeader(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
+    // response.setHeader(
+    //   "Access-Control-Allow-Methods",
+    //   "GET, POST, PATCH, DELETE, OPTIONS"
+    // );
+    // response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
     response.setHeader("Access-Control-Allow-Credentials", true);
   }
   next();
@@ -38,9 +40,10 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     cookie: {
-      maxAge: 1000 * 60 * 10,
+      maxAge: 1000 * 60 * 60 * 24 * 10,
     },
     resave: true,
+    rolling: true,
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.DATABASE_URL,

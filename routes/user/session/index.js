@@ -1,16 +1,19 @@
 const path = require("path");
+const authenticate = require(path.resolve("middleware/authenticate"));
 const router = require("express").Router();
 const User = require(path.resolve("models/User"));
+const Room = require(path.resolve("models/Room"));
 
-router.get("/", async (request, response) => {
-  if (!request.cookies) return response.status(400).send("cookies not found");
-  if (!request.session.userId)
-    return response.status(404).send({ message: "session not found" });
+router.get("/", authenticate, async (request, response) => {
   const user = await User.findOne({ _id: request.session.userId });
-  if (!user) return response.status(404).send({ message: "user not found" });
+  const rooms = await Room.find({ creator: request.session.userId });
   response.send({
     message: "success",
-    data: { email: user.email, name: user.username },
+    data: {
+      email: user.email,
+      username: user.username,
+      rooms: rooms.map(({ name, url }) => ({ name, url })),
+    },
   });
 });
 

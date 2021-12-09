@@ -30,7 +30,6 @@ router.post("/", async (request, response) => {
   request.session.userId = user._id;
   response.send({
     message: "success",
-    data: { name: user.name, email: user.email },
   });
   console.debug(`Login [success] ${request.body.email}`);
   console.log(request.session.id);

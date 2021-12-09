@@ -18,10 +18,11 @@ const emailTransport = nodemailer.createTransport({
 router.post("/", async (request, response) => {
   console.debug(`Registration [attempt] ${request.body.email}`);
   const { error } = registerValidation(request.body);
+  console.log("TEST");
   if (error)
     return response.status(400).send({
       message: "Registration is not valid",
-      error: error.details[0].message,
+      error: error?.details[0].message,
     });
 
   const emailExists = await User.findOne({ email: request.body.email });

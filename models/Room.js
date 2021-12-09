@@ -1,14 +1,38 @@
 const mongoose = require("mongoose");
 
-const roomSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
   {
-    ownerId: { type: String, required: true, min: 10 },
-    memberIds: { type: Array, required: false, max: 100 },
-    name: { type: String, required: true, min: 4 },
-    password: { type: String, required: true, min: 10, max: 255 },
+    name: { type: String, required: true, min: 1, max: 30 },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    shortId: { type: String, required: true },
+    url: { type: String, required: true },
+    members: [
+      { userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } },
+    ],
+    requests: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        date: { type: Date, default: Date.now },
+      },
+    ],
+    // queue: [
+    //   {
+    //     source: { type: String, enum: ["youtube", "spotify"], required: true },
+    //     title: { type: String, required: true },
+    //     author: { type: String, required: true },
+    //     url: { type: String },
+    //     thumbnailUrl: { type: String },
+    //     userId: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "User",
+    //       required: true,
+    //     },
+    //   },
+    // ],
+    // password: { type: String, required: true, min: 10, max: 255 },
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Room", roomSchema);
+module.exports = mongoose.model("Room", schema);

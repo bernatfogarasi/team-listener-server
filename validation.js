@@ -25,6 +25,13 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
+const newRoomValidation = (data) => {
+  const schema = Joi.object({
+    name: Joi.string().min(1).max(30),
+  });
+  return schema.validate(data);
+};
+
 const searchValidation = (data) => {
   const schema = Joi.object({
     text: Joi.string().min(1).required(),
@@ -34,4 +41,5 @@ const searchValidation = (data) => {
 
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
+module.exports.newRoomValidation = newRoomValidation;
 module.exports.searchValidation = searchValidation;
