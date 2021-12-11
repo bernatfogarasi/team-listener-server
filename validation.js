@@ -32,6 +32,13 @@ const newRoomValidation = (data) => {
   return schema.validate(data);
 };
 
+const requestRoomValidation = (data) => {
+  const schema = Joi.object({
+    shortId: Joi.string().min(1).max(30),
+  });
+  return schema.validate(data);
+};
+
 const searchValidation = (data) => {
   const schema = Joi.object({
     text: Joi.string().min(1).required(),
@@ -43,3 +50,4 @@ module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.newRoomValidation = newRoomValidation;
 module.exports.searchValidation = searchValidation;
+module.exports.requestRoomValidation = requestRoomValidation;

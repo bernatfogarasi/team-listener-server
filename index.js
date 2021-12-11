@@ -36,26 +36,38 @@ app.use((request, response, next) => {
   next();
 });
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 10,
-    },
-    resave: true,
-    rolling: true,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DATABASE_URL,
-      // crypto: {
-      //   secret: process.env.SESSION_SECRET,
-      // },
-    }),
-  })
-);
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 10,
+  },
+  resave: true,
+  rolling: true,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.DATABASE_URL,
+    // crypto: {
+    //   secret: process.env.SESSION_SECRET,
+    // },
+  }),
+});
+
+app.use(sessionMiddleware);
 
 app.use("/", require("./routes"));
 
-app.listen(process.env.PORT || 4000, () =>
+const server = app.listen(process.env.PORT || 4000, () =>
   console.log(`Server started at ${Date()}.`)
 );
+
+const io = require("socket.io")(server, {
+  cors: {
+    // origin: "http://localhost:3000",
+    credentials: true,
+  },
+});
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
+});
+
+require("./sockets/room")(io);

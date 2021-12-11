@@ -7,11 +7,21 @@ const schema = new mongoose.Schema(
     shortId: { type: String, required: true },
     url: { type: String, required: true },
     members: [
-      { userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } },
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+      },
     ],
     requests: [
       {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
         date: { type: Date, default: Date.now },
       },
     ],
