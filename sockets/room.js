@@ -14,6 +14,18 @@ const authenticate = async (socket, next) => {
   next();
 };
 
+const checkMembership = async (socket, next) => {
+  const shortId = socket.handshake.query.shortId;
+  const room = await Room.findOne({ shortId });
+  if (!room) return socket.emit("message", "room not found");
+  const memberIds = room.members.map(({ userId }) => userId.toString());
+  if (!memberIds.includes(socket.request.session.userId))
+    return socket.emit("message", "not member");
+  socket.join(shortId);
+  socket.emit("message", "success");
+  next();
+};
+
 var connections = {};
 
 const sockets = (io) => {
@@ -25,22 +37,14 @@ const sockets = (io) => {
 
   io.use(authenticate);
 
+  io.use(checkMembership);
+
   io.on("connection", (socket) => {
     userId = socket.request.session.userId;
     userId in connections
       ? (connections[userId].socketId = socket.id)
       : (connections[userId] = { socketId: socket.id });
     console.log(connections);
-
-    socket.on("join-room", async (shortId) => {
-      const room = await Room.findOne({ shortId });
-      if (!room) return socket.emit("message", "room not found");
-      const memberIds = room.members.map(({ userId }) => userId.toString());
-      if (!memberIds.includes(socket.request.session.userId))
-        return socket.emit("message", "not member");
-      socket.join(shortId);
-      socket.emit("message", "joined");
-    });
   });
 };
 

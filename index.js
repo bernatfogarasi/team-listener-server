@@ -15,6 +15,7 @@ app.use(express.json());
 app.use((request, response, next) => {
   const corsWhiteList = ["http://teamlistener.com", "http://localhost:3000"];
   const requestOrigin = request.header("origin");
+  console.log(requestOrigin);
   if (corsWhiteList.indexOf(requestOrigin) !== -1) {
     response.setHeader("Access-Control-Allow-Origin", requestOrigin);
     // response.setHeader(
@@ -25,6 +26,7 @@ app.use((request, response, next) => {
     response.setHeader("Access-Control-Allow-Headers", "Content-Type");
     response.setHeader("Access-Control-Allow-Credentials", true);
   }
+
   next();
 });
 
@@ -62,7 +64,7 @@ const server = app.listen(process.env.PORT || 4000, () =>
 
 const io = require("socket.io")(server, {
   cors: {
-    // origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://teamlistener.com"],
     credentials: true,
   },
 });
