@@ -34,18 +34,19 @@ router.post("/", authenticate, async (request, response) => {
       site: "youtube",
       id: data.videoId,
       title: data.title.runs[0].text,
-      thumbnail: data.thumbnail.thumbnails.slice(-1)[0].url,
-      channel: {
-        title: data.ownerText.runs[0].text,
-        id: data.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId,
-        thumbnail:
-          data.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails.slice(
-            -1
-          )[0].url,
-      },
+      thumbnailUrl: data.thumbnail.thumbnails.slice(-1)[0].url,
+      author: data.ownerText.runs[0].text,
+      // channel: {
+      //   title: data.ownerText.runs[0].text,
+      //   id: data.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId,
+      //   thumbnail:
+      //     data.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails.slice(
+      //       -1
+      //     )[0].url,
+      // },
     };
     result.url = `https://www.youtube.com/watch?v=${result.id}`;
-    result.channel.url = `https://www.youtube.com/channel/${result.channel.id}`;
+    // result.channel.url = `https://www.youtube.com/channel/${result.channel.id}`;
     return result;
   };
 
