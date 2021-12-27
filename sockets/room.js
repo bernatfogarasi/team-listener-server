@@ -21,7 +21,6 @@ const checkMembership = async (socket, next) => {
   const memberIds = room.members.map(({ userId }) => userId.toString());
   if (!memberIds.includes(socket.request.session.userId))
     return socket.emit("message", "not member");
-  socket.emit("message", "success");
   next();
 };
 
@@ -39,16 +38,27 @@ const getQueue = (room) => {
   }));
 };
 
-const getCurrent = (room) => ({
-  id: room.current.id,
-  site: room.current.site,
-  title: room.current.title,
-  author: room.current.author,
-  url: room.current.url,
-  thumbnailUrl: room.current.thumbnailUrl,
-});
+const getCurrent = (room) =>
+  room.current.toObject()
+    ? {
+        id: room.current.id,
+        site: room.current.site,
+        title: room.current.title,
+        author: room.current.author,
+        url: room.current.url,
+        thumbnailUrl: room.current.thumbnailUrl,
+      }
+    : null;
 
 const getPlaying = (room) => room.playing;
+
+const getRequests = (room) =>
+  room.requests.map(({ username, date }) => ({ username, date }));
+
+const getMembers = (room) =>
+  room.members.map((member) => {
+    member.userId;
+  });
 
 const sockets = (io) => {
   io.use(authenticate);
@@ -57,7 +67,7 @@ const sockets = (io) => {
   io.on("connection", async (socket) => {
     const userId = socket.request.session.userId;
     const shortId = socket.handshake.query.shortId;
-    console.log("CONNECT", userId, shortId);
+    console.log("CONNECT", shortId, userId);
 
     await socket.join(shortId);
 
@@ -66,6 +76,12 @@ const sockets = (io) => {
     io.to(shortId).emit("queue", getQueue(room));
 
     io.to(shortId).emit("current", getCurrent(room));
+
+    io.to(shortId).emit("playing", getPlaying(room));
+
+    io.to(shortId).emit("progress", room.progress);
+
+    io.to(shortId).emit("requests", getRequests(room));
 
     socket.on(
       "request-queue",
@@ -81,7 +97,10 @@ const sockets = (io) => {
           userId,
         };
         let room = await Room.findOne({ shortId });
-        if (from === null && to === null) room.queue.push(data);
+        if (from === null && to === null && room.current.toObject())
+          room.queue.push(data);
+        if (from === null && to === null && !room.current.toObject())
+          room.current = data;
         if (from !== null && to === null)
           array.move(room.queue, from, room.queue.length - 1);
         if (from === null && to !== null) room.queue.splice(to, 0, data);
@@ -89,6 +108,7 @@ const sockets = (io) => {
         await room.save();
 
         io.to(shortId).emit("queue", getQueue(room));
+        io.to(shortId).emit("current", getCurrent(room));
       }
     );
 
@@ -96,13 +116,14 @@ const sockets = (io) => {
       "request-current",
       async ({ id, site, title, author, url, thumbnailUrl }, from) => {
         const room = await Room.findOne({ shortId });
-        console.log(typeof from);
         if (typeof from === "number") room.queue.splice(from, 1);
         room.current = { id, site, title, author, url, thumbnailUrl };
+        room.progress = 0;
         await room.save();
 
         io.to(shortId).emit("current", getCurrent(room));
         io.to(shortId).emit("queue", getQueue(room));
+        io.to(shortId).emit("progress", room.progress);
       }
     );
 
@@ -113,15 +134,49 @@ const sockets = (io) => {
       io.to(shortId).emit("playing", getPlaying(room));
     });
 
-    socket.on("disconnect", () => {
-      console.log("DISCONNECT");
+    socket.on("request-remove", async (index) => {
+      console.log(index);
+      const room = await Room.findOne({ shortId });
+      if (index >= 0) room.queue.splice(index, 1);
+      else if (room.queue.length) room.current = room.queue.splice(0, 1)[0];
+      else {
+        room.current = null;
+        room.playing = false;
+        room.seconds = 0;
+      }
+
+      await room.save();
+
+      io.to(shortId).emit("current", getCurrent(room));
+      io.to(shortId).emit("queue", getQueue(room));
+      io.to(shortId).emit("playing", getPlaying(room));
     });
 
-    socket.on("request-remove", async (index) => {
+    socket.on("request-progress", async (fraction) => {
       const room = await Room.findOne({ shortId });
-      room.queue.splice(index, 1);
+      room.progress = fraction;
       await room.save();
-      io.to(shortId).emit("queue", getQueue(room));
+      io.to(shortId).emit("progress", room.progress);
+    });
+
+    socket.on("request-requests", async () => {
+      const room = await Room.findOne({ shortId });
+      io.to(shortId).emit("requests", getRequests(room));
+    });
+
+    socket.on("request-accept", async (index) => {
+      const room = await Room.findOne({ shortId });
+      const { userId, username } = room.requests[index];
+      console.log(username);
+      room.members.push({ userId });
+      room.requests.splice(index, 1);
+      await room.save();
+      io.to(shortId).emit("members", getMembers(room));
+      io.to(shortId).emit("requests", getRequests(room));
+    });
+
+    socket.on("disconnect", () => {
+      console.log("DISCONNECT");
     });
   });
 };

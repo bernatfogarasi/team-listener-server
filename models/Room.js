@@ -13,6 +13,7 @@ const schema = new mongoose.Schema(
           ref: "User",
           required: true,
         },
+        // username: { type: String, required: true },
       },
     ],
     active: [
@@ -31,12 +32,12 @@ const schema = new mongoose.Schema(
           ref: "User",
           required: true,
         },
-        date: { type: Date, default: Date.now },
+        username: { type: String, required: true },
+        date: { type: Date, default: Date.now() },
       },
     ],
-    seconds: { type: Number, default: 0 },
     playing: { type: Boolean, default: false },
-    playing: { type: Boolean, default: false },
+    progress: { type: Number, default: 0 },
     current: {
       id: { type: String, default: null },
       site: { type: String, default: null },

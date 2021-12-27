@@ -73,3 +73,5 @@ io.use((socket, next) => {
 });
 
 require("./sockets/room")(io);
+
+app.io = io;
