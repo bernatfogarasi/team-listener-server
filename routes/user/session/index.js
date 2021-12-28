@@ -5,8 +5,9 @@ const User = require(path.resolve("models/User"));
 const Room = require(path.resolve("models/Room"));
 
 router.get("/", authenticate, async (request, response) => {
-  const user = await User.findOne({ _id: request.session.userId });
-  const rooms = await Room.find({ creator: request.session.userId });
+  const userId = request.session.userId;
+  const user = await User.findOne({ _id: userId });
+  const rooms = await Room.find({ "members.userId": userId });
   response.send({
     message: "success",
     data: {

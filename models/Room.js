@@ -13,16 +13,7 @@ const schema = new mongoose.Schema(
           ref: "User",
           required: true,
         },
-        // username: { type: String, required: true },
-      },
-    ],
-    active: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
+        active: { type: Boolean, default: false },
       },
     ],
     requests: [
@@ -32,7 +23,6 @@ const schema = new mongoose.Schema(
           ref: "User",
           required: true,
         },
-        username: { type: String, required: true },
         date: { type: Date, default: Date.now() },
       },
     ],
