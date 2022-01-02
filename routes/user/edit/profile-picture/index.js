@@ -1,0 +1,19 @@
+const path = require("path");
+const { send } = require("process");
+const authenticate = require(path.resolve("middleware/authenticate"));
+const router = require("express").Router();
+const User = require(path.resolve("models/User"));
+
+router.post("/", authenticate, async (request, response) => {
+  const file = request.files?.file;
+  if (!file) return response.status(400).send({ message: "file not found" });
+  const { user } = request;
+  user.profilePicture = {
+    data: request.files.file.data,
+    contentType: request.files.file.mimetype,
+  };
+  await user.save();
+  return response.send({ message: "success" });
+});
+
+module.exports = router;

@@ -8,6 +8,7 @@ const authenticate = async (request, response, next) => {
     return response.status(404).send({ message: "session not found" });
   const user = await User.findOne({ _id: request.session.userId });
   if (!user) return response.status(404).send({ message: "user not found" });
+  request.user = user;
   next();
 };
 

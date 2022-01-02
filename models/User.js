@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema(
   {
-    username: { type: String, required: true, min: 6, max: 20, unique: true },
+    username: { type: String, required: true, min: 6, max: 20 },
     email: { type: String, required: true, min: 6, max: 256, unique: true },
+    profilePicture: { data: { type: Buffer }, contentType: { type: String } },
     emailConfirmed: { type: Boolean, default: false },
     emailConfirmationToken: {
       type: String,
-      required: true,
     },
-    password: { type: String, required: true, min: 10, max: 256 },
+    password: { type: String, min: 10, max: 256 },
     createdAtTimestamp: { type: Number, default: Date.now },
   },
   { timestamps: true }

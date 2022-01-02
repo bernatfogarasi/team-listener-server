@@ -1,5 +1,5 @@
 const router = require("express").Router();
 
-router.use("/manual", require("./manual"));
+router.use("/google", require("./google"));
 
 module.exports = router;

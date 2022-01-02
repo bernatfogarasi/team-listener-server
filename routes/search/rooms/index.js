@@ -10,10 +10,11 @@ router.post("/", authenticate, async (request, response) => {
     return response
       .status(400)
       .send({ message: "Invalid search.", error: error?.details[0]?.message });
-
-  const regex = new RegExp(request.body.text, "i"); // i: case insensitive
+  const { text } = request.body;
+  console.log(text);
+  const regex = new RegExp(text, "i"); // i: case insensitive
   const rooms = await Room.find({ name: { $regex: regex } });
-  return response.send({ message: "success", data: rooms });
+  return response.send({ message: "success", data: rooms.splice(0, 10) });
 });
 
 module.exports = router;
