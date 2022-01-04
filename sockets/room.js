@@ -24,8 +24,6 @@ const checkMembership = async (socket, next) => {
   next();
 };
 
-var connections = {};
-
 const getQueue = (room) => {
   return room.queue.map((item) => ({
     _id: item._id.toString(),
@@ -52,26 +50,30 @@ const getCurrent = (room) =>
 
 const getPlaying = (room) => room.playing;
 
-const getRequests = (room) =>
-  Promise.all(
-    room.requests.map(async (request) => {
+const getRequests = async (room) => {
+  const requests = await Promise.all(
+    room.requests.map(async (request, index) => {
       const user = await User.findOne({ _id: request.userId });
-      return { username: user.username, date: request.date };
+      if (user) return { username: user.username, date: request.date };
     })
   );
+  return requests.filter((request) => request);
+};
 
-const getMembers = (room) =>
-  Promise.all(
+const getMembers = async (room) => {
+  const members = await Promise.all(
     room.members.map(async (member) => {
       const user = await User.findOne({ _id: member.userId });
-      return {
-        username: user.username,
-        _id: member._id,
-        active: member.active,
-      };
+      if (user)
+        return {
+          username: user.username,
+          _id: member._id,
+          active: member.active,
+        };
     })
   );
-
+  return members.filter((member) => member);
+};
 const sockets = (io) => {
   io.use(authenticate);
   io.use(checkMembership);
@@ -92,17 +94,11 @@ const sockets = (io) => {
     await room.save();
 
     io.to(shortId).emit("queue", getQueue(room));
-
     io.to(shortId).emit("current", getCurrent(room));
-
     io.to(shortId).emit("playing", getPlaying(room));
-
     io.to(shortId).emit("progress", room.progress);
-
     io.to(shortId).emit("requests", await getRequests(room));
-
     io.to(shortId).emit("members", await getMembers(room));
-
     io.to(shortId).emit("name", room.name);
 
     socket.on(

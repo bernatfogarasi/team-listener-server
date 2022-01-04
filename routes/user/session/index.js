@@ -4,6 +4,32 @@ const router = require("express").Router();
 const User = require(path.resolve("models/User"));
 const Room = require(path.resolve("models/Room"));
 
+const getMembers = async (membersOriginal) => {
+  const members = await Promise.all(
+    membersOriginal.map(async (member) => {
+      const user = await User.findOne({ _id: member.userId });
+      if (user)
+        return {
+          username: user.username,
+          _id: member._id,
+          active: member.active,
+          profilePicture: user.profilePicture,
+        };
+    })
+  );
+  return members.filter((member) => member);
+};
+
+const getRooms = (rooms) =>
+  Promise.all(
+    rooms.map(async ({ name, url, members, playing }) => ({
+      name,
+      url,
+      members: await getMembers(members),
+      playing,
+    }))
+  );
+
 router.get("/", authenticate, async (request, response) => {
   const { userId } = request.session;
   const user = await User.findOne({ _id: userId });
@@ -13,7 +39,7 @@ router.get("/", authenticate, async (request, response) => {
     data: {
       email: user.email,
       username: user.username,
-      rooms: rooms.map(({ name, url }) => ({ name, url })),
+      rooms: await getRooms(rooms),
       profilePicture: user.profilePicture,
     },
   });
