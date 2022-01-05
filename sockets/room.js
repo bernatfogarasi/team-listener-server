@@ -197,9 +197,12 @@ const sockets = (io) => {
       room.members.find(
         (member) => member.userId.toString() === userId
       ).active = false;
+      if (!room.members.filter((member) => member.active).length)
+        room.playing = false;
       await room.save();
-      console.log("DISCONNECT");
+      io.to(shortId).emit("playing", getPlaying(room));
       io.to(shortId).emit("members", await getMembers(room));
+      console.log("DISCONNECT");
     });
   });
 };

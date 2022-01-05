@@ -1,18 +1,15 @@
 require("dotenv").config();
 const path = require("path");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
 const router = require("express").Router();
 const User = require(path.resolve("models/User"));
-const { signupGoogleValidation } = require(path.resolve("validation"));
+const { authGoogleValidation } = require(path.resolve("validation"));
 const { OAuth2Client } = require("google-auth-library");
+
 const clientId =
   "95200909886-co62p1sehhu134kdvoai53gomdkac4p6.apps.googleusercontent.com";
-const client = new OAuth2Client(clientId);
 
 router.post("/", async (request, response) => {
-  const { error } = signupGoogleValidation(request.body);
+  const { error } = authGoogleValidation(request.body);
   if (error)
     return response.status(400).send({
       message: "not valid",
@@ -20,6 +17,7 @@ router.post("/", async (request, response) => {
     });
   const { tokenId } = request.body;
 
+  const client = new OAuth2Client(clientId);
   const ticket = await client.verifyIdToken({
     idToken: tokenId,
     audience: process.env.CLIENT_ID,
@@ -35,7 +33,7 @@ router.post("/", async (request, response) => {
       username: given_name,
       email,
       emailConfirmed: email_verified,
-      profilePicture: picture,
+      profilePicture: { url: picture },
     });
 
     var userSaved;

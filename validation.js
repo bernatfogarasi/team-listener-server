@@ -12,12 +12,6 @@ const signupValidation = (data) => {
   }).validate(data);
 };
 
-const signupGoogleValidation = (data) => {
-  return Joi.object({
-    tokenId: Joi.string().required(),
-  }).validate(data);
-};
-
 const loginValidation = (data) => {
   return Joi.object({
     email: Joi.string()
@@ -29,9 +23,15 @@ const loginValidation = (data) => {
   }).validate(data);
 };
 
-const loginGoogleValidation = (data) => {
+const authGoogleValidation = (data) => {
   return Joi.object({
     tokenId: Joi.string().required(),
+  }).validate(data);
+};
+
+const authSpotifyValidation = (data) => {
+  return Joi.object({
+    code: Joi.string().required(),
   }).validate(data);
 };
 
@@ -60,9 +60,9 @@ const searchValidation = (data) => {
 // };
 
 module.exports.signupValidation = signupValidation;
-module.exports.signupGoogleValidation = signupGoogleValidation;
 module.exports.loginValidation = loginValidation;
-module.exports.loginGoogleValidation = loginGoogleValidation;
+module.exports.authGoogleValidation = authGoogleValidation;
+module.exports.authSpotifyValidation = authSpotifyValidation;
 module.exports.newRoomValidation = newRoomValidation;
 module.exports.requestRoomValidation = requestRoomValidation;
 module.exports.searchValidation = searchValidation;

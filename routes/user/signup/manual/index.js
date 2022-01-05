@@ -1,8 +1,10 @@
 require("dotenv").config();
 const path = require("path");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const { sendConfirmationEmail } = require(path.resolve("email"));
+const { getEmailConfirmationToken } = require(path.resolve(
+  "functions/characters"
+));
+const { sendConfirmationEmail } = require(path.resolve("functions/email"));
 const router = require("express").Router();
 const User = require(path.resolve("models/User"));
 const { signupValidation } = require(path.resolve("validation"));
@@ -26,7 +28,7 @@ router.post("/", async (request, response) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  const emailConfirmationToken = crypto.randomBytes(64).toString("hex");
+  const emailConfirmationToken = getEmailConfirmationToken();
 
   const user = new User({
     username,

@@ -9,7 +9,7 @@ router.post("/", authenticate, async (request, response) => {
   if (error)
     return response
       .status(400)
-      .send({ message: "Invalid search.", error: error.details[0].message });
+      .send({ message: "not valid", error: error.details[0].message });
 
   const getJsonFromHtml = (html) => {
     const startText = "var ytInitialData = ";

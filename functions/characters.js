@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const encode = (
   number,
   characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -25,4 +27,6 @@ const random = (
   return result.join("");
 };
 
-module.exports = { encode, random };
+const getEmailConfirmationToken = () => crypto.randomBytes(64).toString("hex");
+
+module.exports = { encode, random, getEmailConfirmationToken };
