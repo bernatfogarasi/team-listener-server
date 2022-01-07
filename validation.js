@@ -59,11 +59,13 @@ const searchValidation = (data) => {
 //   }).validate(data);
 // };
 
-module.exports.signupValidation = signupValidation;
-module.exports.loginValidation = loginValidation;
-module.exports.authGoogleValidation = authGoogleValidation;
-module.exports.authSpotifyValidation = authSpotifyValidation;
-module.exports.newRoomValidation = newRoomValidation;
-module.exports.requestRoomValidation = requestRoomValidation;
-module.exports.searchValidation = searchValidation;
+module.exports = {
+  signupValidation,
+  loginValidation,
+  authGoogleValidation,
+  authSpotifyValidation,
+  newRoomValidation,
+  requestRoomValidation,
+  searchValidation,
+};
 // module.exports.profilePictureValidation = profilePictureValidation;

@@ -29,16 +29,16 @@ const schema = new mongoose.Schema(
     playing: { type: Boolean, default: false },
     progress: { type: Number, default: 0 },
     current: {
-      id: { type: String, default: null },
-      site: { type: String, default: null },
-      title: { type: String, default: null },
-      author: { type: String, default: null },
-      url: { type: String, default: null },
-      thumbnailUrl: { type: String, default: null },
+      id: { type: String },
+      site: { type: String },
+      title: { type: String },
+      author: { type: String },
+      duration: { type: Number },
+      url: { type: String },
+      thumbnailUrl: { type: String },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        default: null,
       },
     },
     queue: [
@@ -47,6 +47,7 @@ const schema = new mongoose.Schema(
         site: { type: String, enum: ["youtube", "spotify"], required: true },
         title: { type: String, required: true },
         author: { type: String, required: true },
+        duration: { type: Number, required: true },
         url: { type: String },
         thumbnailUrl: { type: String },
         userId: {

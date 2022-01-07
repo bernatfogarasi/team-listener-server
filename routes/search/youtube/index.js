@@ -3,6 +3,7 @@ const router = require("express").Router();
 const { searchValidation } = require(path.resolve("validation"));
 const fetch = require("node-fetch");
 const authenticate = require(path.resolve("middleware/authenticate"));
+const log = require(path.resolve("functions/log"));
 
 router.post("/", authenticate, async (request, response) => {
   const { error } = searchValidation(request.body);
@@ -28,14 +29,20 @@ router.post("/", authenticate, async (request, response) => {
   };
 
   const formatVideoInfo = (video) => {
-    if (!("videoRenderer" in video)) return;
+    if (!video?.videoRenderer) return;
     const data = video.videoRenderer;
+    if (!data?.lengthText?.simpleText) return;
     let result = {
       site: "youtube",
       id: data.videoId,
       title: data.title.runs[0].text,
       thumbnailUrl: data.thumbnail.thumbnails.slice(-1)[0].url,
       author: data.ownerText.runs[0].text,
+      duration: data.lengthText.simpleText
+        .split(":")
+        .reverse()
+        .map((item, index) => item * Math.pow(60, index) * 1000)
+        .reduce((a, b) => a + b, 0),
       // channel: {
       //   title: data.ownerText.runs[0].text,
       //   id: data.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId,

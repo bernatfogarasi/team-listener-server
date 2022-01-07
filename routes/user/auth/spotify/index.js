@@ -17,7 +17,7 @@ router.post("/", async (request, response) => {
     });
   const { code } = request.body;
 
-  const spotifyApi = getSpotifyApi(request);
+  const spotifyApi = await getSpotifyApi(request);
 
   let authData;
   try {

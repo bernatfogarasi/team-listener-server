@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const fileUpload = require("express-fileupload");
+const path = require("path");
+const log = require(path.resolve("functions/log"));
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }, (error) =>
   console.log(error ? error : "Connected to database.")
@@ -14,6 +16,12 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }, (error) =>
 app.use(express.json());
 
 app.use(fileUpload());
+
+app.use((request, response, next) => {
+  log.request(request.header("origin"), "->", request.originalUrl);
+  log.request(JSON.stringify(request.cookies));
+  next();
+});
 
 app.use((request, response, next) => {
   const corsWhiteList = [
@@ -39,12 +47,6 @@ app.use((request, response, next) => {
 });
 
 app.use(cookieParser());
-
-app.use((request, response, next) => {
-  console.debug(`New request: ${request.originalUrl}`);
-  console.debug(`Cookies: ${JSON.stringify(request.cookies)}`);
-  next();
-});
 
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
