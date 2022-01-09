@@ -1,8 +1,6 @@
 const path = require("path");
-const { send } = require("process");
-const authenticate = require(path.resolve("middleware/authenticate"));
+const { authenticate } = require(path.resolve("middleware"));
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
 
 router.post("/", authenticate, async (request, response) => {
   const file = request.files?.file;

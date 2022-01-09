@@ -1,20 +1,14 @@
 require("dotenv").config();
 const path = require("path");
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
-const { authGoogleValidation } = require(path.resolve("validation"));
+const { User } = require(path.resolve("models"));
+const { validate } = require(path.resolve("middleware"));
 const { OAuth2Client } = require("google-auth-library");
 
 const clientId =
   "95200909886-co62p1sehhu134kdvoai53gomdkac4p6.apps.googleusercontent.com";
 
-router.post("/", async (request, response) => {
-  const { error } = authGoogleValidation(request.body);
-  if (error)
-    return response.status(400).send({
-      message: "not valid",
-      error: error?.details[0].message,
-    });
+router.post("/", validate.authGoogle, async (request, response) => {
   const { tokenId } = request.body;
 
   const client = new OAuth2Client(clientId);

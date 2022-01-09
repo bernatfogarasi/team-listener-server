@@ -1,7 +1,7 @@
 const path = require("path");
 require("dotenv").config();
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
+const { User } = require(path.resolve("models"));
 
 router.get("/", async (request, response) => {
   console.debug(`Confirmation [attempt]`);

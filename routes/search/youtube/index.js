@@ -1,17 +1,9 @@
 const path = require("path");
 const router = require("express").Router();
-const { searchValidation } = require(path.resolve("validation"));
 const fetch = require("node-fetch");
-const authenticate = require(path.resolve("middleware/authenticate"));
-const log = require(path.resolve("functions/log"));
+const { validate, authenticate } = require(path.resolve("middleware"));
 
-router.post("/", authenticate, async (request, response) => {
-  const { error } = searchValidation(request.body);
-  if (error)
-    return response
-      .status(400)
-      .send({ message: "not valid", error: error.details[0].message });
-
+router.post("/", [validate.search, authenticate], async (request, response) => {
   const getJsonFromHtml = (html) => {
     const startText = "var ytInitialData = ";
     const endText = "</script>";

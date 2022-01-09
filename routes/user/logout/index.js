@@ -1,6 +1,6 @@
 const path = require("path");
 const router = require("express").Router();
-const authenticate = require(path.resolve("middleware/authenticate"));
+const { authenticate } = require(path.resolve("middleware"));
 
 router.get("/", authenticate, async (request, response) => {
   request.session.destroy((error) => {

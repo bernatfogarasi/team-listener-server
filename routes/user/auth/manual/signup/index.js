@@ -1,29 +1,20 @@
 require("dotenv").config();
 const path = require("path");
 const bcrypt = require("bcrypt");
-const { getEmailConfirmationToken } = require(path.resolve(
-  "functions/characters"
-));
-const { sendConfirmationEmail } = require(path.resolve("functions/email"));
+const {
+  characters: { getEmailConfirmationToken },
+  email: { sendConfirmationEmail },
+} = require(path.resolve("functions"));
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
-const { signupValidation } = require(path.resolve("validation"));
+const { User } = require(path.resolve("models"));
+const { validate } = require(path.resolve("middleware"));
 
-router.post("/", async (request, response) => {
-  const { errorValidation } = signupValidation(request.body);
-  if (errorValidation)
-    return response.status(400).send({
-      message: "not valid",
-      error: errorValidation?.details[0].message,
-    });
-
+router.post("/", validate.signup, async (request, response) => {
   const { username, email, password } = request.body;
 
   const emailExists = await User.findOne({ email });
   if (emailExists)
-    return response
-      .status(400)
-      .send({ message: "Email already exists, please log in." });
+    return response.status(400).send({ message: "email already exists" });
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);

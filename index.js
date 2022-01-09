@@ -7,7 +7,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const fileUpload = require("express-fileupload");
 const path = require("path");
-const log = require(path.resolve("functions/log"));
+const { log } = require(path.resolve("functions"));
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }, (error) =>
   console.log(error ? error : "Connected to database.")

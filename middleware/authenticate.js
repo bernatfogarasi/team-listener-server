@@ -1,5 +1,5 @@
 const path = require("path");
-const User = require(path.resolve("models/User"));
+const { User } = require(path.resolve("models"));
 
 const authenticate = async (request, response, next) => {
   if (!request.cookies)

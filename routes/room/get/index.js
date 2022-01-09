@@ -1,8 +1,8 @@
 require("dotenv").config();
 const path = require("path");
 const router = require("express").Router();
-const Room = require(path.resolve("models/Room"));
-const authenticate = require(path.resolve("middleware/authenticate"));
+const { Room } = require(path.resolve("models"));
+const { authenticate } = require(path.resolve("middleware"));
 
 router.get("/", authenticate, async (request, response) => {
   const shortId = request.query.shortId;

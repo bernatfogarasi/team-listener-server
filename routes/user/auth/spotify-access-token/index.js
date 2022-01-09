@@ -1,8 +1,10 @@
 require("dotenv").config();
 const path = require("path");
-const { getSpotifyApi } = require(path.resolve("functions/spotify"));
+const {
+  spotify: { getSpotifyApi },
+} = require(path.resolve("functions"));
 const router = require("express").Router();
-const authenticate = require(path.resolve("middleware/authenticate"));
+const { authenticate } = require(path.resolve("middleware"));
 
 router.get("/", authenticate, async (request, response) => {
   const spotifyApi = await getSpotifyApi(request);

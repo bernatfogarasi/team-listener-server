@@ -1,9 +1,7 @@
 const path = require("path");
-const log = require(path.resolve("functions/log"));
 const extract = require("./extract");
-const User = require(path.resolve("models/User"));
-const Room = require(path.resolve("models/Room"));
-const array = require(path.resolve("functions/array"));
+const { Room } = require(path.resolve("models"));
+const { array, log } = require(path.resolve("functions"));
 
 const actions = async (io, socket, userId, shortId, room) => {
   const getRoom = async () => {
@@ -56,22 +54,23 @@ const actions = async (io, socket, userId, shortId, room) => {
     emit.progress(room);
   };
 
-  const requestCurrent = async (content) => {
-    log.debug("request-current", content?.title);
-    await requestPlaying(Boolean(content?.id));
-    await requestProgress(0);
-    let room = await getRoom();
-    room.current = content;
-    room = await saveRoom(room);
-    emit.current(room);
-  };
-
   const requestRemove = async (index) => {
     let room = await getRoom();
     log.debug("request-remove", index);
     room.queue.splice(index, 1);
     room = await saveRoom(room);
     emit.queue(room);
+  };
+
+  const requestCurrent = async (content, index) => {
+    log.debug("request-current", content?.title);
+    await requestPlaying(Boolean(content?.id));
+    await requestProgress(0);
+    await requestRemove(index);
+    let room = await getRoom();
+    room.current = content;
+    room = await saveRoom(room);
+    emit.current(room);
   };
 
   const requestNext = async () => {
@@ -102,10 +101,15 @@ const actions = async (io, socket, userId, shortId, room) => {
   const requestMove = async (indexFrom, indexTo) => {
     let room = await getRoom();
     log.debug("request-move", indexFrom, indexTo);
-    indexTo = Number.isInteger(indexTo) ? indexTo : room.queue.length;
-    array.move(room.queue, indexFrom, indexTo);
-    room = await saveRoom(room);
-    emit.queue(room);
+    if (indexTo === "current") {
+      await requestCurrent(room.queue[indexFrom]);
+      await requestRemove(indexFrom);
+    } else {
+      indexTo = Number.isInteger(indexTo) ? indexTo : room.queue.length;
+      array.move(room.queue, indexFrom, indexTo);
+      room = await saveRoom(room);
+      emit.queue(room);
+    }
   };
 
   const requestMemberInsert = async (userId, index) => {

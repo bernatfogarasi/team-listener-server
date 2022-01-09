@@ -1,20 +1,14 @@
 require("dotenv").config();
 const path = require("path");
-const { getSpotifyApi } = require(path.resolve("functions/spotify"));
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
-const { authSpotifyValidation } = require(path.resolve("validation"));
-const { getEmailConfirmationToken } = require(path.resolve(
-  "functions/characters"
-));
+const { User } = require(path.resolve("models"));
+const { validate } = require(path.resolve("middleware"));
+const {
+  spotify: { getSpotifyApi },
+  characters: { getEmailConfirmationToken },
+} = require(path.resolve("functions"));
 
-router.post("/", async (request, response) => {
-  const { error } = authSpotifyValidation(request.body);
-  if (error)
-    return response.status(400).send({
-      message: "not valid",
-      error: error?.details[0].message,
-    });
+router.post("/", validate.authSpotify, async (request, response) => {
   const { code } = request.body;
 
   const spotifyApi = await getSpotifyApi(request);
@@ -45,7 +39,7 @@ router.post("/", async (request, response) => {
     const emailConfirmationToken = getEmailConfirmationToken();
     const user = new User({
       username: display_name,
-      email,
+      spotifyId: id,
       emailConfirmationToken,
       spotifyRefreshToken: refreshToken,
       profilePicture: { url: images[0].url },

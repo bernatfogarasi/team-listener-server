@@ -1,8 +1,7 @@
 const path = require("path");
-const authenticate = require(path.resolve("middleware/authenticate"));
+const { authenticate } = require(path.resolve("middleware"));
 const router = require("express").Router();
-const User = require(path.resolve("models/User"));
-const Room = require(path.resolve("models/Room"));
+const { Room, User } = require(path.resolve("models"));
 
 const getMembers = async (membersOriginal) => {
   const members = await Promise.all(

@@ -1,9 +1,6 @@
 const path = require("path");
-const User = require(path.resolve("models/User"));
-const Room = require(path.resolve("models/Room"));
-const mongoose = require("mongoose");
-const array = require(path.resolve("functions/array"));
-const log = require(path.resolve("functions/log"));
+const { Room, User } = require(path.resolve("models"));
+const { log } = require(path.resolve("functions"));
 const actions = require("./actions");
 
 const authenticate = async (socket, next) => {

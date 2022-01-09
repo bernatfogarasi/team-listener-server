@@ -1,8 +1,7 @@
 const router = require("express").Router();
 
-router.use("/accept", require("./accept"));
+router.use("/get", require("./get"));
 router.use("/new", require("./new"));
 router.use("/request", require("./request"));
-router.use("/get", require("./get"));
 
 module.exports = router;

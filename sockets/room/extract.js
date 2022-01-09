@@ -1,6 +1,6 @@
 const path = require("path");
-const User = require(path.resolve("models/User"));
-const log = require(path.resolve("functions/log"));
+const { User } = require(path.resolve("models"));
+const { log } = require(path.resolve("functions"));
 
 const extractQueue = (room) => {
   const queue = room.queue.map((item) => ({
