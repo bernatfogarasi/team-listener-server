@@ -40,6 +40,7 @@ router.get("/", authenticate, async (request, response) => {
       username: user.username,
       rooms: await getRooms(rooms),
       profilePicture: user.profilePicture,
+      spotifyAvailable: Boolean(user.spotifyId),
     },
   });
 });

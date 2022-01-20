@@ -25,7 +25,7 @@ router.post("/", [validate.search, authenticate], async (request, response) => {
     };
     return result;
   });
-
+  console.log("test");
   response.send({ message: "success", data: results });
 });
 

@@ -14,6 +14,8 @@ const schema = new mongoose.Schema(
           required: true,
         },
         active: { type: Boolean, default: false },
+        activeAt: { type: Date, default: Date.now() },
+        acceptedAt: { type: Date, default: Date.now() },
       },
     ],
     requests: [

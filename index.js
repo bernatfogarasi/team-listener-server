@@ -10,7 +10,7 @@ const path = require("path");
 const { log } = require(path.resolve("functions"));
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }, (error) =>
-  console.log(error ? error : "Connected to database.")
+  console.log(error || "Connected to database.")
 );
 
 app.use(express.json());
@@ -30,7 +30,6 @@ app.use((request, response, next) => {
     // "http://192.168.1.104:3000",
   ];
   const requestOrigin = request.header("origin");
-  console.log(requestOrigin);
   if (corsWhiteList.indexOf(requestOrigin) !== -1) {
     response.setHeader("Access-Control-Allow-Origin", requestOrigin);
     // response.setHeader("Access-Control-Allow-Origin", "*");

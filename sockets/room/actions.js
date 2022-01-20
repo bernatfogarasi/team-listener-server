@@ -54,19 +54,19 @@ const actions = async (io, socket, userId, shortId, room) => {
     emit.progress(room);
   };
 
-  const requestRemove = async (index) => {
+  const requestRemove = async (index, count = 1) => {
+    if (count === 0) return;
     let room = await getRoom();
-    log.debug("request-remove", index);
-    room.queue.splice(index, 1);
+    log.debug("request-remove", index, count);
+    room.queue.splice(index, count);
     room = await saveRoom(room);
     emit.queue(room);
   };
 
-  const requestCurrent = async (content, index) => {
+  const requestCurrent = async (content) => {
     log.debug("request-current", content?.title);
     await requestPlaying(Boolean(content?.id));
     await requestProgress(0);
-    await requestRemove(index);
     let room = await getRoom();
     room.current = content;
     room = await saveRoom(room);
@@ -110,6 +110,12 @@ const actions = async (io, socket, userId, shortId, room) => {
       room = await saveRoom(room);
       emit.queue(room);
     }
+  };
+
+  const requestJump = async (index) => {
+    log.debug("request-jump", index);
+    await requestMove(index, "current");
+    await requestRemove(0, index);
   };
 
   const requestMemberInsert = async (userId, index) => {
@@ -169,19 +175,20 @@ const actions = async (io, socket, userId, shortId, room) => {
     await requestActive(false);
   };
 
-  socket.on("request-playing", requestPlaying);
-  socket.on("request-progress", requestProgress);
+  socket.on("disconnect", disconnect);
   socket.on("request-current", requestCurrent);
-  socket.on("request-remove", requestRemove);
-  socket.on("request-move", requestMove);
-  socket.on("request-next", requestNext);
   socket.on("request-fill", requestFill);
   socket.on("request-insert", requestInsert);
+  socket.on("request-jump", requestJump);
+  socket.on("request-move", requestMove);
+  socket.on("request-next", requestNext);
   socket.on("request-member-insert", requestMemberInsert);
   socket.on("request-member-remove", requestMemberRemove);
+  socket.on("request-playing", requestPlaying);
+  socket.on("request-progress", requestProgress);
+  socket.on("request-remove", requestRemove);
   socket.on("request-request-accept", requestRequestAccept);
   socket.on("request-request-remove", requestRequestRemove);
-  socket.on("disconnect", disconnect);
 };
 
 module.exports = actions;

@@ -4,20 +4,20 @@ const schema = new mongoose.Schema(
   {
     username: { type: String, required: true, min: 6, max: 20 },
     email: { type: String, min: 6, max: 256, unique: true },
+    emailConfirmed: { type: Boolean, default: false },
+    emailConfirmationToken: { type: String, unique: true },
+    password: { type: String, min: 10, max: 256 },
+    googleId: { type: String, unique: true },
+    googleEmail: { type: String, min: 6, max: 256 },
+    spotifyId: { type: String, unique: true },
+    spotifyEmail: { type: String, min: 6, max: 256 },
+    spotifyRefreshToken: { type: String },
     profilePicture: {
       data: { type: Buffer },
       contentType: { type: String },
       url: { type: String },
     },
-    emailConfirmed: { type: Boolean, default: false },
-    emailConfirmationToken: {
-      type: String,
-    },
-    spotifyId: { type: String },
-    googleId: { type: String },
-    password: { type: String, min: 10, max: 256 },
     createdAtTimestamp: { type: Number, default: Date.now },
-    spotifyRefreshToken: { type: String },
   },
   { timestamps: true }
 );
