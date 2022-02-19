@@ -18,30 +18,24 @@ app.use(express.json());
 app.use(fileUpload());
 
 app.use((request, response, next) => {
-  log.request(request.header("origin"), "->", request.originalUrl);
-  log.request(JSON.stringify(request.cookies));
+  log.request(
+    request.header("origin"),
+    "->",
+    request.originalUrl,
+    "|",
+    "cookies: ",
+    JSON.stringify(request.cookies)
+  );
   next();
 });
 
 app.use((request, response, next) => {
-  const corsWhiteList = [
-    "http://teamlistener.com",
-    "http://localhost:3000",
-    // "http://192.168.1.104:3000",
-  ];
-  const requestOrigin = request.header("origin");
-  if (corsWhiteList.indexOf(requestOrigin) !== -1) {
-    response.setHeader("Access-Control-Allow-Origin", requestOrigin);
-    // response.setHeader("Access-Control-Allow-Origin", "*");
-    // response.setHeader(
-    //   "Access-Control-Allow-Methods",
-    //   "GET, POST, PATCH, DELETE, OPTIONS"
-    // );
-    // response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    response.setHeader("Access-Control-Allow-Credentials", true);
-  }
-
+  response.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.REACT_APP_CLIENT_ORIGIN
+  );
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  response.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
 
@@ -70,11 +64,7 @@ const server = app.listen(process.env.PORT || 4000, () =>
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://teamlistener.com",
-      // "http://192.168.1.104:3000",
-    ],
+    origin: [process.env.REACT_APP_CLIENT_ORIGIN],
     credentials: true,
   },
 });
