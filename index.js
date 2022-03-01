@@ -30,10 +30,7 @@ app.use((request, response, next) => {
 });
 
 app.use((request, response, next) => {
-  response.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.REACT_APP_CLIENT_ORIGIN
-  );
+  response.setHeader("Access-Control-Allow-Origin", process.env.CLIENT_ORIGIN);
   response.setHeader("Access-Control-Allow-Headers", "Content-Type");
   response.setHeader("Access-Control-Allow-Credentials", true);
   next();
@@ -64,7 +61,7 @@ const server = app.listen(process.env.PORT || 4000, () =>
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: [process.env.REACT_APP_CLIENT_ORIGIN],
+    origin: [process.env.CLIENT_ORIGIN],
     credentials: true,
   },
 });

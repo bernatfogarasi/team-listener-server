@@ -12,7 +12,7 @@ const Joi = require("joi");
 
 const validate = Object.entries({
   signup: {
-    username: Joi.string().min(4).required(),
+    username: Joi.string().min(1).required(),
     email: Joi.string()
       .min(6)
       .regex(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/)

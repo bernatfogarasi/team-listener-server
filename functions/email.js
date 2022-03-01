@@ -9,9 +9,7 @@ const emailTransport = nodemailer.createTransport({
 });
 
 const sendConfirmationEmail = (to, confirmationToken) => {
-  const url = `http://${request.get(
-    "host"
-  )}/user/confirm?token=${confirmationToken}`;
+  const url = `${process.env.CLIENT_ORIGIN}/user/confirm?token=${confirmationToken}`;
 
   const html = `Please click <a href="${url}">here</a> to verify your email address.`;
 
