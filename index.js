@@ -18,18 +18,6 @@ app.use(express.json());
 app.use(fileUpload());
 
 app.use((request, response, next) => {
-  log.request(
-    request.header("origin"),
-    "->",
-    request.originalUrl,
-    "|",
-    "cookies: ",
-    JSON.stringify(request.cookies)
-  );
-  next();
-});
-
-app.use((request, response, next) => {
   response.setHeader("Access-Control-Allow-Origin", process.env.CLIENT_ORIGIN);
   response.setHeader("Access-Control-Allow-Headers", "Content-Type");
   response.setHeader("Access-Control-Allow-Credentials", true);
@@ -52,6 +40,12 @@ const sessionMiddleware = session({
 });
 
 app.use(sessionMiddleware);
+
+app.use((request, response, next) => {
+  log.request(request.header("origin"), "->", request.originalUrl);
+  log.request(request.session);
+  next();
+});
 
 app.use("/", require("./routes"));
 
