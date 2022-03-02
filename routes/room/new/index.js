@@ -43,7 +43,6 @@ router.post(
 
     response.send({
       message: "success",
-      // redirect: `http://teamlistener.com/room/${room._id}`,
     });
     console.debug(`New room ${request.body.name}`);
   }

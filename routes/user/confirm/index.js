@@ -24,17 +24,19 @@ router.get("/", async (request, response) => {
       return response
         .status(404)
         .redirect(
-          `http://teamlistener.com/signup/confirmation/token-not-found`
+          `${process.env.CLIENT_ORIGIN}/signup/confirmation/token-not-found`
         );
 
     if (document.emailConfirmed)
       return response
         .status(400)
         .redirect(
-          `http://teamlistener.com/signup/confirmation/email-already-verified`
+          `${process.env.CLIENT_ORIGIN}/signup/confirmation/email-already-verified`
         );
 
-    response.redirect(`http://teamlistener.com/signup/confirmation/success`);
+    response.redirect(
+      `${process.env.CLIENT_ORIGIN}/signup/confirmation/success`
+    );
     console.debug(`Confirmation [success]`);
   });
 });
