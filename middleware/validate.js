@@ -26,7 +26,7 @@ const validate = Object.entries({
       .regex(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/)
       .email()
       .required(),
-    password: Joi.string().min(10).required(),
+    password: Joi.string().min(8).required(),
   },
   authGoogle: {
     tokenId: Joi.string().required(),

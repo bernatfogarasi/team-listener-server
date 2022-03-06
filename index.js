@@ -26,10 +26,16 @@ app.use((request, response, next) => {
 
 app.use(cookieParser());
 
+const productionCookieSettings =
+  process.env.NODE_ENV == "production"
+    ? { sameSite: "none", secure: true }
+    : {};
+
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 10,
+    ...productionCookieSettings,
   },
   resave: true,
   rolling: true,
