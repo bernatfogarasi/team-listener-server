@@ -26,10 +26,12 @@ app.use((request, response, next) => {
 
 app.use(cookieParser());
 
-const productionCookieSettings =
-  process.env.NODE_ENV == "production"
-    ? { sameSite: "none", secure: true }
-    : {};
+let productionCookieSettings = {};
+
+if (process.env.NODE_ENV == "production") {
+  productionCookieSettings = { sameSite: "none", secure: true };
+  app.set("trust proxy", 1);
+}
 
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
