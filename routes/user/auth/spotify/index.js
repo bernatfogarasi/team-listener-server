@@ -34,12 +34,16 @@ router.post("/", validate.authSpotify, async (request, response) => {
   const userSession = await User.findOne({ _id: request.session?.userId });
   const userSpotify = await User.findOne({ spotifyId: id });
 
-  if (userSession === userSpotify)
-    return response.status(400).send({ message: "spotify already linked" });
-  if (userSession && userSpotify)
+  if (userSession && userSpotify) {
+    if (userSession === userSpotify)
+      return response
+        .status(400)
+        .send({ message: "spotify already linked to this user" });
     return response
       .status(400)
       .send({ message: "spotify already linked to different user" });
+  }
+
   if (userSession) {
     userSession.spotifyId = id;
     userSession.spotifyEmail = email;
